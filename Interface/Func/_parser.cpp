@@ -10,10 +10,10 @@ namespace Parser{
     bool Parser::store(std::string& s){
         Message m;
         m.s = s;
-        m.addr.__u6_addr.__u6_addr32[0] = 0;
-        m.addr.__u6_addr.__u6_addr32[1] = 0;
-        m.addr.__u6_addr.__u6_addr32[2] = 0;
-        m.addr.__u6_addr.__u6_addr32[3] = 0;
+        m.addr.in6_addr::__u6_addr.__u6_addr32[0] = 0;
+        m.addr.in6_addr::__u6_addr.__u6_addr32[1] = 0;
+        m.addr.in6_addr::__u6_addr.__u6_addr32[2] = 0;
+        m.addr.in6_addr::__u6_addr.__u6_addr32[3] = 0;
         Parser::_parsedMsgs.push_back(m);
     }
 
