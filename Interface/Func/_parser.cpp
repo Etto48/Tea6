@@ -29,9 +29,11 @@ namespace Parser{
         switch(m.s[0]){
             case 'q':
                 //TODO CALLS ROBA DI ETTORE CHE NON SI SA COSA FACCIA
+                return m.s;
                 break;
             case 'a':
                 //TODO CALLS ROBA DI ETTORE CHE NON SI SA COSA FACCIA
+                return m.s;
                 break;
             default: return NULL;
         }
