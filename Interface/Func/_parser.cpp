@@ -18,8 +18,9 @@ namespace Parser{
     }
 
     void Parser::printMsgHistory(){
-        int i = 0;
-        while(!Parser::_parsedMsgs.empty()){ std::cout<<Parser::_parsedMsgs.[i];i++; }
+        std::list<Message> l;
+        l = Parser::_parsedMsgs;
+        while(!Parser::_parsedMsgs.empty()){ std::cout<<l.front().s; l.pop_front(); }
     }
 
     std::string Parser::parseMessage(Message& m){
