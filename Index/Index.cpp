@@ -39,6 +39,10 @@ namespace Index
     }
 
     //Index
+    Index::Index()
+    {
+        this->indexMutex = PTHREAD_MUTEX_INITIALIZER;
+    }
     uint8_t Index::hashIndex(const std::string& username)
     {
         uint8_t ret = 0;
@@ -48,14 +52,27 @@ namespace Index
     }
     bool Index::operator+=(const UserData& entry)
     {
-        return hashTable[hashIndex(entry.username)].add(entry);
+        pthread_mutex_lock(&indexMutex);
+        auto ret = hashTable[hashIndex(entry.username)].add(entry);
+        pthread_mutex_unlock(&indexMutex);
+        return ret;
     }
     bool Index::operator-=(const std::string& username)
     {
-        return hashTable[hashIndex(username)].remove(username);
+        pthread_mutex_lock(&indexMutex);
+        auto ret = hashTable[hashIndex(username)].remove(username);
+        pthread_mutex_unlock(&indexMutex);
+        return ret;
     }
     UserData* Index::find(const std::string& username)
     {
-        return hashTable[hashIndex(username)].find(username);
+        pthread_mutex_lock(&indexMutex);
+        auto ret = hashTable[hashIndex(username)].find(username);
+        pthread_mutex_unlock(&indexMutex);
+        return ret;
+    }
+    Index::~Index()
+    {
+        pthread_mutex_destroy(&indexMutex);
     }
 };

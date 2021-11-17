@@ -54,6 +54,7 @@ namespace Index
     {
     protected:
         _IndexList hashTable[HASH_TABLE_SIZE];
+        pthread_mutex_t indexMutex;
         /**
          * @brief the return is calculated summing up every char in the username mod 256
          * 
@@ -63,6 +64,11 @@ namespace Index
         uint8_t hashIndex(const std::string& username);
 
     public:
+        /**
+         * @brief Construct a new Index object and initialize mutex
+         * 
+         */
+        Index();
         /**
          * @brief adds a new user to the index
          * 
@@ -84,5 +90,10 @@ namespace Index
          * @return nullptr if the username was not found, a pointer to the UserData struct in the index otherways
          */
         UserData* find(const std::string& username);
+        /**
+         * @brief Destroy the Index object and mutex
+         * 
+         */
+        ~Index();
     };
 };
