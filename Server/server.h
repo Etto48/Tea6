@@ -3,6 +3,10 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <iostream>
+#include <string>
+#include <list>
+#include <string.h>
+#include <signal.h>
 #include <unistd.h>
 #include <pthread.h>
 
@@ -17,8 +21,8 @@ namespace Server
         /**
          * @brief thread code
          * 
-         * @param csock clientSocket
-         * @param caddr clientAddr
+         * @param me pointer to class
+         * @return thread return
          */
         static void* run(void* me);
     public:
@@ -33,22 +37,48 @@ namespace Server
                 perror("Could not create thread");
         }
         /**
-         * @brief Destroy the Connection object and join thread
+         * @brief join thread
          * 
+         * @return thread return
          */
-        ~Connection()
+        void* join()
         {
             void* ret;
             pthread_join(id,&ret);
+            return ret;
         }
     };
     class Server
     {
     protected:
+        pthread_t id;
         int serverSocket;
         sockaddr_in6 serverAddr;
+        std::list<Connection> connList;
+        /**
+         * @brief thread code
+         * 
+         * @param me pointer to class
+         * @return thread return
+         */
+        static void* run(void* me);
     public:
+        /**
+         * @brief Construct a new Server object
+         * 
+         * @param port server tcp port
+         */
         Server(uint16_t port);
-        
+        /**
+         * @brief join thread
+         * 
+         * @return thread return
+         */
+        void* join()
+        {
+            void* ret;
+            pthread_join(id,&ret);
+            return ret;
+        }
     };
 };
