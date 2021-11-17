@@ -5,7 +5,7 @@ MINOR		:=	0
 PATCH		:=	1
 VERSION		:=	$(MAJOR).$(MINOR).$(PATCH)
 
-CXXARGS		:=	-O3 -DVERSION=$(VERSION) -pthread -std=c++17
+CXXARGS		:=	-O3 -DVERSION=$(VERSION) -pthread
 
 CPPFILES	:=	$(shell find ./ -name '*.cpp')
 HFILES		:=	$(shell find ./ -name '*.h')
