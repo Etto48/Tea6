@@ -15,16 +15,18 @@ struct Message{
     std::string s;
     in6_addr addr;
 };
+namespace Parser{
 
-enum printCodes { _allMessages, _parsedMessages};
-
-class Parser{
-    private: 
-            std::list<Message> parsedMessages;
-            std::list<Message> allMessages;
-    public : 
-        Parser();
-        bool operator >> (Message& m);
-        bool operator << (printCodes &p);
-        
-};
+    class Parser{
+    
+        private: 
+            std::list<Message> _parsedMsgs;
+            bool store(std::string& s);
+            bool store(Message& m);
+        public: 
+            Parser();
+            std::string parseMessage(std::string& s);
+            std::string parseMessage(Message& m);
+            void printMsgHistory();
+    };
+}
