@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <string>
+#include <string.h>
 #include <arpa/inet.h>
 #include <list>
 #include <iostream>
