@@ -24,10 +24,11 @@ $(PROJECT): $(OBJFILES)
 
 %.cpp.o: %.cpp $(HFILES)
 	@echo Compiling $@
-	@$(CXX) -o $@ $(CXXARGS) $^
+	@$(CXX) -o $@ -c $(CXXARGS) $<
 
 .PHONY:	clean
 
 clean:
-	@echo Cleaning all obj files
+	@echo Cleaning files
 	@rm -f $(FOUNDOFILES)
+	@rm -f $(PROJECT)
