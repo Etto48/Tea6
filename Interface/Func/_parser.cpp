@@ -38,7 +38,7 @@ namespace Parser{
     }
 
     std::string Parser::parseMessage(std::string& s){
-        if(s.empty())
+        if(s.empty())return NULL;
         store(s);
         switch(s[0]){
             case 'q':
