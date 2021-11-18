@@ -48,7 +48,18 @@ namespace Server
     // Server
     Server::Server(uint16_t port)
     {
-        serverSocket = socket(AF_INET6, SOCK_STREAM, 0);
+        serverSocket = socket(AF_INET6, SOCK_STREAM,0);
+        if(serverSocket<0)
+        {
+            perror("Error creating socket");
+            pthread_exit(nullptr);
+        }
+        int yes = 1;
+        if(setsockopt(serverSocket,SOL_SOCKET,SO_REUSEADDR,&yes,sizeof(yes))<0)
+        {
+            perror("Erro setting socket reuseaddr to true");
+            pthread_exit(nullptr);
+        }
         bzero(&serverAddr, sizeof(sockaddr_in6));
         serverAddr.sin6_family = AF_INET6;
         serverAddr.sin6_port = htons(port);
@@ -56,11 +67,20 @@ namespace Server
         serverAddr.sin6_scope_id = 0x20; // link - local
         serverAddr.sin6_addr = {0};
         if (bind(serverSocket, (sockaddr *)&serverAddr, sizeof(sockaddr_in6)) < 0)
+        {
             perror("Error binding socket");
+            pthread_exit(nullptr);
+        }
         if (listen(serverSocket, 100) < 0)
+        {
             perror("Error listening on socket");
+            pthread_exit(nullptr);
+        }
         if (pthread_create(&id, nullptr, run, (void *)this) < 0)
+        {
             perror("Error starting thread");
+            pthread_exit(nullptr);
+        }
     }
     void *Server::run(void *me)
     {
@@ -83,7 +103,10 @@ namespace Server
                     pfd.fd = t->serverSocket;
                     auto polled = poll(&pfd, 1, 100);
                     if (polled < 0)
+                    {
                         perror("Error during poll");
+                        pthread_exit(nullptr);
+                    }
                     else if (polled > 0)
                         clientAvailable = true;
                 }
