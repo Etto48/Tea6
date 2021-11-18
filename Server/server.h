@@ -9,6 +9,7 @@
 #include <signal.h>
 #include <unistd.h>
 #include <pthread.h>
+#include <poll.h>
 
 namespace Server
 {
@@ -18,6 +19,7 @@ namespace Server
         int clientSocket;
         sockaddr_in6 clientAddr;
         pthread_t id;
+        bool shutdownRequested = false;
         /**
          * @brief thread code
          * 
@@ -25,6 +27,11 @@ namespace Server
          * @return thread return
          */
         static void* run(void* me);
+        /**
+         * @brief close the connection, should never be called
+         * 
+         */
+        void die();
     public:
         /**
          * @brief Construct a new Connection object
@@ -47,6 +54,11 @@ namespace Server
             pthread_join(id,&ret);
             return ret;
         }
+        /**
+         * @brief function to kill the connection from another thread
+         * 
+         */
+        void close(){die();}
     };
     class Server
     {
@@ -55,6 +67,7 @@ namespace Server
         int serverSocket;
         sockaddr_in6 serverAddr;
         std::list<Connection> connList;
+        bool shutdownRequested = false;
         /**
          * @brief thread code
          * 
@@ -62,6 +75,11 @@ namespace Server
          * @return thread return
          */
         static void* run(void* me);
+        /**
+         * @brief kill every connection and close the server, should never be called
+         * 
+         */
+        void die();
     public:
         /**
          * @brief Construct a new Server object
@@ -80,5 +98,10 @@ namespace Server
             pthread_join(id,&ret);
             return ret;
         }
+        /**
+         * @brief function to kill the server and every connection from another thread
+         * 
+         */
+        void close(){shutdownRequested = true;}
     };
 };
