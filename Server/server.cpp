@@ -47,8 +47,8 @@ namespace Server
         serverAddr.sin6_addr = {0};
         if(bind(serverSocket,(sockaddr*)&serverAddr,sizeof(sockaddr_in6))<0)
             perror("Error binding socket");
-        listen(serverSocket,100);
-
+        if(listen(serverSocket,100)<0)
+            perror("Error listening on socket");
         if(pthread_create(&id,nullptr,run,(void*)this)<0)
             perror("Error starting thread");
     }
@@ -61,7 +61,7 @@ namespace Server
             bzero(&clientAddr,sizeof(sockaddr_in6));
             socklen_t caSize = sizeof(sockaddr_in6);
             int clientSocket = accept(t->serverSocket,(sockaddr*)&clientAddr,&caSize);
-            t->connList.emplace_back(Connection(clientSocket,clientAddr));
+            t->connList.push_back(Connection(clientSocket,clientAddr));
         }
         while(!t->connList.empty())
         {
