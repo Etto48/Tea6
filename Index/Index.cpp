@@ -13,7 +13,7 @@ namespace Index
     {
         if(this->find(entry.username))
         {
-            ls.emplace_back(entry);   
+            ls.push_back(entry);   
             return true;
         }
         else return false;
