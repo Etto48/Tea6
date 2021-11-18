@@ -125,13 +125,10 @@ namespace Server
         for (auto &c: connList)
         { // close every open connection
             c.close();
+            c.join();
         }
         shutdown(serverSocket, SHUT_RDWR);
         ::close(serverSocket);
-        for (auto &c: connList)
-        { // close every open connection
-            c.join();
-        }
         std::cout << "(" << id << ") Server closed.\n";
         pthread_exit(nullptr);
     }

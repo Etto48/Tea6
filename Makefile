@@ -5,10 +5,11 @@ MINOR		:=	0
 PATCH		:=	1
 VERSION		:=	$(MAJOR).$(MINOR).$(PATCH)
 
-CXXARGS		:=	-O3 -DVERSION=$(VERSION) -pthread -std=c++2a
+CXXARGS		:=	-Ofast -DVERSION=$(VERSION) -pthread -std=c++2a
 
 CPPFILES	:=	$(shell find ./ -name '*.cpp')
 HFILES		:=	$(shell find ./ -name '*.h')
+THIS		:=	./Makefile
 
 OBJFILES	:=	$(patsubst %.cpp, %.cpp.o, $(CPPFILES))
 FOUNDOFILES	:=	$(shell find ./ -name '*.o')
@@ -22,7 +23,7 @@ $(PROJECT): $(OBJFILES)
 	@echo Linking $@
 	@$(CXX) -o $@ $(CXXARGS) $?
 
-%.cpp.o: %.cpp $(HFILES)
+%.cpp.o: %.cpp $(HFILES) $(THIS)
 	@echo Compiling $@
 	@$(CXX) -o $@ -c $(CXXARGS) $<
 
