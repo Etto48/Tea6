@@ -5,6 +5,7 @@ namespace Parser{
     bool Parser::store(Message& m){
         Message p = m;
         Parser::_parsedMsgs.push_back(p);
+        //@Lorenzinco23 we should return something
     }
 
     bool Parser::store(std::string& s){
@@ -12,6 +13,7 @@ namespace Parser{
         m.s = s;
         bzero(&m.addr,sizeof(in6_addr));
         Parser::_parsedMsgs.push_back(m);
+        //@Lorenzinco23 we should return something
     }
 
     void Parser::printMsgHistory(){
@@ -38,6 +40,7 @@ namespace Parser{
 
     std::string Parser::parseMessage(std::string& s){
         if(s.empty())return NULL;
+            //@Lorenzinco23 use "" instead of NULL
         store(s);
         switch(s[0]){
             case 'q':
@@ -47,6 +50,8 @@ namespace Parser{
                 //TODO CALLS ROBA DI ETTORE CHE NON SI SA COSA FACCIA
                 break;
             default: return NULL;
+            //@Lorenzinco23 use "" instead of NULL
         }
+        //@Lorenzinco23 we should return something
     }
 }

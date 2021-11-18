@@ -30,6 +30,7 @@ namespace Server
             char addrbuf[1024];
             inet_ntop(AF_INET6,(void*)&t->clientAddr.sin6_addr,addrbuf,1024);
             std::cout << std::string(addrbuf) << " Recv: " << msg;
+            //to @Etto48 here we should execute a parser to run a command and respond corresponding to the message
         } while (nbytes > 0);
         return nullptr;
     }
