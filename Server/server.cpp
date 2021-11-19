@@ -10,7 +10,7 @@ namespace Server
         char buf[1024];
         char addrbuf[1024];
         inet_ntop(AF_INET6, (void *)&t->clientAddr.sin6_addr, addrbuf, 1024);
-        Log::event << Log::time() << addrbuf << "(" << t->id << ") Connection opened.\n";
+        Log::event << Log::time() << " " << addrbuf << "(" << t->id << ") Connection opened.\n";
         do
         {
             std::string msg = "";
