@@ -11,6 +11,8 @@
 #include <pthread.h>
 #include <poll.h>
 
+#include "../Log/log.h"
+
 namespace Server
 {
     class Connection
@@ -19,7 +21,6 @@ namespace Server
         int clientSocket;
         sockaddr_in6 clientAddr;
         pthread_t id;
-        bool shutdownRequested = false;
         /**
          * @brief thread code
          * 

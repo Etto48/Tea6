@@ -5,7 +5,16 @@ MINOR		:=	0
 PATCH		:=	1
 VERSION		:=	$(MAJOR).$(MINOR).$(PATCH)
 
-CXXARGS		:=	-Ofast -DVERSION=$(VERSION) -pthread -std=c++2a
+#can be debug|release
+BUILD_TYPE	:=	debug
+
+CXXARGS		:=	-DVERSION=$(VERSION) -pthread -std=c++2a
+
+ifeq ($(BUILD_TYPE),debug)
+	CXXARGS	+=	-D_DEBUG -g -Og
+else
+	CXXARGS	+=	-Ofast
+endif
 
 CPPFILES	:=	$(shell find ./ -name '*.cpp')
 HFILES		:=	$(shell find ./ -name '*.h')

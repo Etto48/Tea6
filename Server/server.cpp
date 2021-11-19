@@ -10,6 +10,7 @@ namespace Server
         char buf[1024];
         char addrbuf[1024];
         inet_ntop(AF_INET6, (void *)&t->clientAddr.sin6_addr, addrbuf, 1024);
+        Log::event << Log::time() << addrbuf << "(" << t->id << ") Connection opened.\n";
         do
         {
             std::string msg = "";
@@ -23,6 +24,7 @@ namespace Server
                     if (buf[i] == '\n') // endmsg
                     {
                         endmsg = true;
+                        buf[i] = 0;
                         break;
                     }
                 }
@@ -30,17 +32,15 @@ namespace Server
             } while (nbytes > 0 && !endmsg);
             if (nbytes > 0)
             {
-                std::cout << std::string(addrbuf) << "(" << t->id << ") Received: " << msg;
+                Log::event << Log::time() << " " << addrbuf << "(" << t->id << ") Received: " << msg << "\n";
                 // to @Etto48 here we should execute a parser to run a command and respond corresponding to the message
             }
         } while (nbytes > 0);
-        if(!t->shutdownRequested)
-            std::cout << std::string(addrbuf) << "(" << t->id << ") Connection closed.\n";
+        Log::event << Log::time() << " " << addrbuf << "(" << t->id << ") Connection closed.\n";
         return nullptr;
     }
     void Connection::die()
     {
-        shutdownRequested = true;
         shutdown(clientSocket, SHUT_RDWR);
         ::close(clientSocket);
     }
@@ -48,14 +48,14 @@ namespace Server
     // Server
     Server::Server(uint16_t port)
     {
-        serverSocket = socket(AF_INET6, SOCK_STREAM,0);
-        if(serverSocket<0)
+        serverSocket = socket(AF_INET6, SOCK_STREAM, 0);
+        if (serverSocket < 0)
         {
             perror("Error creating socket");
             pthread_exit(nullptr);
         }
         int yes = 1;
-        if(setsockopt(serverSocket,SOL_SOCKET,SO_REUSEADDR,&yes,sizeof(yes))<0)
+        if (setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes)) < 0)
         {
             perror("Erro setting socket reuseaddr to true");
             pthread_exit(nullptr);
@@ -85,6 +85,7 @@ namespace Server
     void *Server::run(void *me)
     {
         Server *t = reinterpret_cast<Server *>(me);
+        Log::event << Log::time() << " (" << t->id << ") Server started.\n";
         while (true)
         {
             sockaddr_in6 clientAddr;
@@ -122,14 +123,14 @@ namespace Server
     }
     void Server::die()
     {
-        for (auto &c: connList)
+        for (auto &c : connList)
         { // close every open connection
             c.close();
             c.join();
         }
         shutdown(serverSocket, SHUT_RDWR);
         ::close(serverSocket);
-        std::cout << "(" << id << ") Server closed.\n";
+        Log::event << Log::time() << " (" << id << ") Server closed.\n";
         pthread_exit(nullptr);
     }
 };
