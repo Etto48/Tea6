@@ -3,12 +3,12 @@ CXX			:=	g++
 MAJOR		:=	0
 MINOR		:=	0
 PATCH		:=	1
-VERSION		:=	$(MAJOR).$(MINOR).$(PATCH)
 
 #can be debug|release
 BUILD_TYPE	:=	debug
+VERSION		:=	v$(MAJOR).$(MINOR).$(PATCH)-$(BUILD_TYPE)
 
-CXXARGS		:=	-DVERSION=$(VERSION) -pthread -std=c++2a
+CXXARGS		:=	-DVERSION=\"$(VERSION)\" -pthread -std=c++2a
 
 ifeq ($(BUILD_TYPE),debug)
 	CXXARGS	+=	-D_DEBUG -g -Og

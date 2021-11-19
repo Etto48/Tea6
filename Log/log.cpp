@@ -12,7 +12,11 @@ namespace Log
 {
     Log event{HOME + "/.Tea6/event.log", doEcho};
     Log error{HOME + "/.Tea6/error.log", doEcho};
-    Log debug{HOME + "/.Tea6/debug.log", true};
+    #ifdef _DEBUG
+    Log debug{HOME + "/.Tea6/debug.log", doEcho};
+    #else
+    Log debug{"/dev/null", doEcho};
+    #endif
 
     std::string time(std::string fmt)
     {
@@ -21,8 +25,6 @@ namespace Log
         auto time = std::put_time(std::localtime(&in_time_t), fmt.c_str());
         std::stringstream ss;
         ss << time;
-        std::string ret;
-        ss>>ret;
-        return ret;
+        return ss.str();
     }
 };

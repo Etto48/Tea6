@@ -9,6 +9,7 @@ void ctrl_c(int signum)
 
 int main(int argc, char* argv[], char* envp[])
 {
+    Log::event << Log::time() << " Tea6-"<< VERSION << "\n";
     Server::Server s{4823};
     globalServer = &s;
     signal(SIGINT,ctrl_c);  

@@ -32,7 +32,7 @@ namespace Server
             } while (nbytes > 0 && !endmsg);
             if (nbytes > 0)
             {
-                Log::event << Log::time() << " " << addrbuf << "(" << t->id << ") Received: " << msg << "\n";
+                Log::debug << Log::time() << " " << addrbuf << "(" << t->id << ") Received: " << msg << "\n";
                 // to @Etto48 here we should execute a parser to run a command and respond corresponding to the message
             }
         } while (nbytes > 0);
