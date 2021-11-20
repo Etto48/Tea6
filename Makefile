@@ -65,4 +65,5 @@ show-version:
 
 tag:
 	@git tag -a $(VERSION) -m "new version"
+	@git push --tags origin
 	@echo Tag $(VERSION) added
