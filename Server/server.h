@@ -13,7 +13,7 @@
 
 #include "../Log/log.h"
 #include "../Parser/parser.h"
-#include "../Index/index.h"
+#include "../Database/database.h"
 #include "../Tools/tools.h"
 
 namespace Server

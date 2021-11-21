@@ -40,7 +40,7 @@ namespace Server
                 switch (pm.command)
                 {
                 case Parser::ADD:
-                    if (!(Index::registeredUsers += Index::UserData(pm.args[0], t->clientAddr.sin6_addr)))
+                    if (!(Database::Tables::online += {pm.args[0], t->clientAddr.sin6_addr}))
                     { // error
                         response = Parser::errorMessages::AlreadyPresent;
                     }
@@ -51,7 +51,7 @@ namespace Server
                     break;
                 case Parser::QUERY:
                 {
-                    auto ud = Index::registeredUsers.find(pm.args[0]);
+                    auto ud = Database::Tables::online.find(pm.args[0]);
                     if (!ud)
                     {
                         response = Parser::errorMessages::NotPresent;
@@ -59,7 +59,7 @@ namespace Server
                     else
                     {
                         // add address to response
-                        response = std::string("q") + ud->username + " " + Tools::ipv6ToString(ud->addr) + "\n";
+                        response = std::string("q") + ud->key + " " + Tools::ipv6ToString(ud->value) + "\n";
                     }
                 }
                 break;
