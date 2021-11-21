@@ -11,9 +11,12 @@ namespace Server
 
         auto ipv6Str = Tools::ipv6ToString(t->clientAddr.sin6_addr);
 
-        Log::event << Log::time() << " " << ipv6Str << "(" << t->id << ") Connection opened.\n";
+        std::string identString = "";
+
+        Log::event << Log::time() << " " << ipv6Str << "(" << t->id << ":" << t->clientSocket << identString << ") Connection opened.\n";
         do
         {
+            identString = t->username!=""?std::string(":")+t->username:"";
             std::string msg = "";
             bool endmsg = false;
             do
@@ -33,7 +36,7 @@ namespace Server
             } while (nbytes > 0 && !endmsg);
             if (nbytes > 0)
             {
-                Log::debug << Log::time() << " " << ipv6Str << "(" << t->id << ") Received: " << msg << "\n";
+                Log::debug << Log::time() << " " << ipv6Str << "(" << t->id << ":" << t->clientSocket << identString << ") Received: " << msg << "\n";
                 // parse the message
                 Parser::ParsedMessage pm{msg};
                 std::string response = "";
@@ -44,15 +47,25 @@ namespace Server
                     { // error
                         response = Parser::errorMessages::AlreadyPresent;
                     }
+                    else if (t->username != "")
+                    {
+                        response = Parser::errorMessages::Protocol;
+                    }
                     else
                     { // success
                         response = msg + "\n";
+                        t->username = pm.args[0];
                     }
                     break;
                 case Parser::QUERY:
                 {
                     auto ud = Database::Tables::online.find(pm.args[0]);
-                    if (!ud)
+                    
+                    if (t->username=="")
+                    {
+                        response = Parser::errorMessages::Protocol;
+                    }
+                    else if (!ud)
                     {
                         response = Parser::errorMessages::NotPresent;
                     }
@@ -67,11 +80,14 @@ namespace Server
                     response = Parser::errorMessages::Protocol;
                     break;
                 }
-                Log::debug << Log::time() << " " << ipv6Str << "(" << t->id << ") Sent: " << response;
+                Log::debug << Log::time() << " " << ipv6Str << "(" << t->id << ":" << t->clientSocket << identString << ") Sent: " << response;
                 send(t->clientSocket, response.c_str(), response.length(), 0);
             }
         } while (nbytes > 0);
-        Log::event << Log::time() << " " << ipv6Str << "(" << t->id << ") Connection closed.\n";
+        if(t->username!="")
+            Database::Tables::online-=(t->username);
+
+        Log::event << Log::time() << " " << ipv6Str << "(" << t->id << ":" << t->clientSocket << identString << ") Connection closed.\n";
         return nullptr;
     }
     void Connection::die()
@@ -92,7 +108,7 @@ namespace Server
         int yes = 1;
         if (setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes)) < 0)
         {
-            perror("Erro setting socket reuseaddr to true");
+            perror("Error setting socket reuseaddr to true");
             pthread_exit(nullptr);
         }
         bzero(&serverAddr, sizeof(sockaddr_in6));
@@ -148,7 +164,7 @@ namespace Server
                 }
             } while (!clientAvailable);
             int clientSocket = accept(t->serverSocket, (sockaddr *)&clientAddr, &caSize);
-            t->connList.push_back(Connection(clientSocket, clientAddr));
+            t->connList.emplace_back(clientSocket, clientAddr);
         }
         while (!t->connList.empty())
         {

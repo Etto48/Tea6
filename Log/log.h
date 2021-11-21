@@ -27,9 +27,9 @@ namespace Log
         std::fstream out;
         bool doEcho;
         pthread_mutex_t logMutex = PTHREAD_MUTEX_INITIALIZER;
-
+        unsigned int color;
     public:
-        Log(const std::string &logfile, bool doEcho) : out(logfile, std::ios::app), doEcho(doEcho) {}
+        Log(const std::string &logfile, bool doEcho, unsigned int color = 0) : out(logfile, std::ios::app), doEcho(doEcho), color(color) {}
         /**
          * @brief use this to log an object to a logfile, you should use it like this: LOG << Log::time() << ... << '\n';
          *
@@ -44,7 +44,7 @@ namespace Log
             pthread_mutex_lock(&logMutex);
             out << obj;
             if (doEcho)
-                std::cout << obj;
+                std::cout << "\e[" << color << "m" << obj << "\e[0m";
             pthread_mutex_unlock(&logMutex);
             return *this;
         }

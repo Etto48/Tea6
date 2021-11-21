@@ -10,8 +10,8 @@ constexpr bool doEcho = false;
 
 namespace Log
 {
-    Log event{HOME + "/.Tea6/event.log", doEcho};
-    Log error{HOME + "/.Tea6/error.log", doEcho};
+    Log event{HOME + "/.Tea6/event.log", doEcho, 32};
+    Log error{HOME + "/.Tea6/error.log", doEcho, 31};
     #ifdef _DEBUG
     Log debug{HOME + "/.Tea6/debug.log", doEcho};
     #else

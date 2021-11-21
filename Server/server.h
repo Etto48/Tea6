@@ -18,12 +18,22 @@
 
 namespace Server
 {
+    constexpr size_t maxClientCount = 1024;
+    /**
+     * @brief NEVER initialize this class in the stack or the "this" pointer will be lost
+     * 
+     */
     class Connection
     {
     protected:
         int clientSocket;
         sockaddr_in6 clientAddr;
         pthread_t id;
+        /**
+         * @brief is empty if user has not autenticated
+         * 
+         */
+        std::string username = "";
         /**
          * @brief thread code
          * 
@@ -39,13 +49,13 @@ namespace Server
     public:
         /**
          * @brief Construct a new Connection object
-         *
+         * 
          * @param clientSocket socket fd of the client
          * @param clientAddr sockaddr struct of the client
          */
         Connection(int clientSocket,const sockaddr_in6& clientAddr):clientSocket(clientSocket),clientAddr(clientAddr),id(0){
-            if(pthread_create(&id,nullptr,run,(void*)this)<0)
-                perror("Could not create thread");
+            if (pthread_create(&id, nullptr, run, (void *)this) < 0)
+                    perror("Could not create thread");
         }
         /**
          * @brief join thread
@@ -54,7 +64,7 @@ namespace Server
          */
         void* join()
         {
-            void* ret;
+            void* ret = nullptr;
             pthread_join(id,&ret);
             return ret;
         }
@@ -63,6 +73,12 @@ namespace Server
          * 
          */
         void close(){die();}
+        /**
+         * @brief Get the Socket object
+         * 
+         * @return socket fd
+         */
+        int getSocket(){return clientSocket;}
     };
     class Server
     {

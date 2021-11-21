@@ -80,7 +80,7 @@ namespace Database
         auto f = this->findNoLock(key);
         pthread_mutex_unlock(&accessMutex);
         Log::debug << Log::time() << " "
-                   << "Index: FIND " << key;
+                   << "Db(" << name << "): FIND " << key;
         if (f)
         {
             Log::debug << "\n";

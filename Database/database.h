@@ -19,6 +19,7 @@ namespace Database
         std::string key;
         T value;
         DataContainer(const std::string &key, const T &value) : key(key), value(value) {}
+        bool operator==(const DataContainer<T>& dc){return key==dc.key;}
     };
 
     /**
