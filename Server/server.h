@@ -12,6 +12,9 @@
 #include <poll.h>
 
 #include "../Log/log.h"
+#include "../Parser/parser.h"
+#include "../Index/index.h"
+#include "../Tools/tools.h"
 
 namespace Server
 {

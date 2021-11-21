@@ -4,6 +4,9 @@
 #include <algorithm>
 #include <arpa/inet.h>
 
+#include "../Log/log.h"
+#include "../Tools/tools.h"
+
 namespace Index
 {
     constexpr unsigned int HASH_TABLE_SIZE = 256;
@@ -96,4 +99,6 @@ namespace Index
          */
         ~Index();
     };
+
+    extern Index registeredUsers;
 };

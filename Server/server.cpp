@@ -8,9 +8,10 @@ namespace Server
         Connection *t = reinterpret_cast<Connection *>(me);
         int nbytes;
         char buf[1024];
-        char addrbuf[1024];
-        inet_ntop(AF_INET6, (void *)&t->clientAddr.sin6_addr, addrbuf, 1024);
-        Log::event << Log::time() << " " << addrbuf << "(" << t->id << ") Connection opened.\n";
+
+        auto ipv6Str = Tools::ipv6ToString(t->clientAddr.sin6_addr);
+
+        Log::event << Log::time() << " " << ipv6Str << "(" << t->id << ") Connection opened.\n";
         do
         {
             std::string msg = "";
@@ -32,11 +33,45 @@ namespace Server
             } while (nbytes > 0 && !endmsg);
             if (nbytes > 0)
             {
-                Log::debug << Log::time() << " " << addrbuf << "(" << t->id << ") Received: " << msg << "\n";
-                // to @Etto48 here we should execute a parser to run a command and respond corresponding to the message
+                Log::debug << Log::time() << " " << ipv6Str << "(" << t->id << ") Received: " << msg << "\n";
+                // parse the message
+                Parser::ParsedMessage pm{msg};
+                std::string response = "";
+                switch (pm.command)
+                {
+                case Parser::ADD:
+                    if (!(Index::registeredUsers += Index::UserData(pm.args[0], t->clientAddr.sin6_addr)))
+                    { // error
+                        response = Parser::errorMessages::AlreadyPresent;
+                    }
+                    else
+                    { // success
+                        response = msg + "\n";
+                    }
+                    break;
+                case Parser::QUERY:
+                {
+                    auto ud = Index::registeredUsers.find(pm.args[0]);
+                    if (!ud)
+                    {
+                        response = Parser::errorMessages::NotPresent;
+                    }
+                    else
+                    {
+                        // add address to response
+                        response = std::string("q") + ud->username + " " + Tools::ipv6ToString(ud->addr) + "\n";
+                    }
+                }
+                break;
+                case Parser::ERROR:
+                    response = Parser::errorMessages::Protocol;
+                    break;
+                }
+                Log::debug << Log::time() << " " << ipv6Str << "(" << t->id << ") Sent: " << response;
+                send(t->clientSocket, response.c_str(), response.length(), 0);
             }
         } while (nbytes > 0);
-        Log::event << Log::time() << " " << addrbuf << "(" << t->id << ") Connection closed.\n";
+        Log::event << Log::time() << " " << ipv6Str << "(" << t->id << ") Connection closed.\n";
         return nullptr;
     }
     void Connection::die()
@@ -133,4 +168,5 @@ namespace Server
         Log::event << Log::time() << " (" << id << ") Server closed.\n";
         pthread_exit(nullptr);
     }
+
 };
