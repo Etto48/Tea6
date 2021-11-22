@@ -3,18 +3,28 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <string>
+#include <unistd.h>
 #include <pthread.h>
+#include <tuple>
 
 #include "../Database/database.h"
 #include "../Tools/tools.h"
 
 namespace Peer
 {
+    /**
+     * @brief NEVER initialize this class in the stack or the "this" pointer will be lost
+     * 
+     */
     class Peer
     {
     protected:
         pthread_t id;
         Database::DataContainer<std::string> userInfo;
+        std::pair<int,sockaddr_in6> server;
+        std::pair<int,sockaddr_in6> peerServer;
+        std::vector<std::pair<int,sockaddr_in6>> connectedPeers;
+        bool shutdownRequested = false;
         /**
          * @brief thread code
          * 
@@ -34,14 +44,10 @@ namespace Peer
          * @param username key to register in the index
          * @param password password for autentication
          * @param indexIp IPv6 of the index server
-         * @param port server TCP port
+         * @param serverPort server TCP port
+         * @param peerPort peer TCP port
          */
-        Peer(const std::string& username, const std::string& password, const std::string& indexIp, uint16_t port):
-            userInfo(username,Tools::sha256(password)),id(0)
-        {
-            if(pthread_create(&id,nullptr,run,(void*)this))
-                perror("Could not create thread");
-        }
+        Peer(const std::string& username, const std::string& password, const std::string& indexIp, uint16_t serverPort, uint16_t peerPort);
         /**
          * @brief join thread
          * 

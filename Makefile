@@ -21,11 +21,13 @@ else
 	CXXARGS	+=	-Ofast
 endif
 
-CPPFILES	:=	$(shell find ./ -name '*.cpp')
-HFILES		:=	$(shell find ./ -name '*.h')
+EXCLUDE		:=	./Interface/%
+
+CPPFILES	:=	$(filter-out $(EXCLUDE), $(shell find ./ -name '*.cpp'))
+HFILES		:=	$(filter-out $(EXCLUDE), $(shell find ./ -name '*.h'))
 THIS		:=	./Makefile
 
-OBJFILES	:=	$(patsubst %.cpp, %.cpp.o, $(CPPFILES))
+OBJFILES	:=	$(filter-out $(EXCLUDE), $(patsubst %.cpp, %.cpp.o, $(CPPFILES)))
 FOUNDOFILES	:=	$(shell find ./ -name '*.o')
 
 PROJECT		:=	Tea6
