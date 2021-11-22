@@ -10,6 +10,7 @@
 #include <stdarg.h>
 #include <string.h>
 #include <sstream>
+#include "../globalDefine.h"
 
 namespace Log
 {

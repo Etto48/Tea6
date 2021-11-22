@@ -16,7 +16,7 @@ namespace Server
         Log::event << Log::time() << " " << ipv6Str << "(" << t->id << ":" << t->clientSocket << identString << ") Connection opened.\n";
         do
         {
-            identString = t->username!=""?std::string(":")+t->username:"";
+            identString = t->username != "" ? std::string(":") + t->username : "";
             std::string msg = "";
             bool endmsg = false;
             do
@@ -43,25 +43,36 @@ namespace Server
                 switch (pm.command)
                 {
                 case Parser::ADD:
-                    if (!(Database::Tables::online += {pm.args[0], t->clientAddr.sin6_addr}))
-                    { // error
-                        response = Parser::errorMessages::AlreadyPresent;
-                    }
-                    else if (t->username != "")
-                    {
+                {
+                    auto pass = Database::Tables::passwords.find(pm.args[0]);
+                    if (t->username != "")
+                    { // connection already logged in
                         response = Parser::errorMessages::Protocol;
+                    }
+                    else if (pass && pass->value != pm.args[1])
+                    { // wrong password
+                        response = Parser::errorMessages::NotPresent;
+                    }
+                    else if (!(Database::Tables::online += {pm.args[0], t->clientAddr.sin6_addr}))
+                    { // user already logged in
+                        response = Parser::errorMessages::AlreadyPresent;
                     }
                     else
                     { // success
+                        if (!pass)
+                        {
+                            Database::Tables::passwords += {pm.args[0], pm.args[1]};
+                        }
                         response = msg + "\n";
                         t->username = pm.args[0];
                     }
-                    break;
+                }
+                break;
                 case Parser::QUERY:
                 {
                     auto ud = Database::Tables::online.find(pm.args[0]);
-                    
-                    if (t->username=="")
+
+                    if (t->username == "")
                     {
                         response = Parser::errorMessages::Protocol;
                     }
@@ -76,7 +87,7 @@ namespace Server
                     }
                 }
                 break;
-                case Parser::ERROR:
+                default:
                     response = Parser::errorMessages::Protocol;
                     break;
                 }
@@ -84,8 +95,8 @@ namespace Server
                 send(t->clientSocket, response.c_str(), response.length(), 0);
             }
         } while (nbytes > 0);
-        if(t->username!="")
-            Database::Tables::online-=(t->username);
+        if (t->username != "")
+            Database::Tables::online -= (t->username);
 
         Log::event << Log::time() << " " << ipv6Str << "(" << t->id << ":" << t->clientSocket << identString << ") Connection closed.\n";
         return nullptr;
@@ -135,6 +146,8 @@ namespace Server
     }
     void *Server::run(void *me)
     {
+        if (Database::Tables::passwords.getPath() == "")
+            Database::Tables::passwords.load(TEA6ROOT + "passwords.db");
         Server *t = reinterpret_cast<Server *>(me);
         Log::event << Log::time() << " (" << t->id << ") Server started.\n";
         while (true)

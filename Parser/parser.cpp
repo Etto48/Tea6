@@ -16,6 +16,9 @@ namespace Parser
             case QUERY:
                 this->command = QUERY;
                 break;
+            case DATA:
+                this->command = DATA;
+                break;
             default:
                 this->command = ERROR;
                 return;
@@ -28,11 +31,15 @@ namespace Parser
             switch (this->command)
             {
             case ADD:
-                if(this->args.size()!=1)
+                if(this->args.size()!=2)
                     this->command = ERROR;
                 break;
             case QUERY:
                 if(this->args.size()!=1)
+                    this->command = ERROR;
+                break;
+            case DATA:
+                if(this->args.size()<1)
                     this->command = ERROR;
                 break;
             default:

@@ -11,8 +11,16 @@ namespace Parser
     {
         ADD = 'a',
         QUERY = 'q',
+        DATA = 'd',
         ERROR = 'e'
     };
+    /**
+     * @brief parses a message and splits the arguments, the syntax for a message is
+     * ADD: "a<username> <password>"
+     * QUERY: "q<username>"
+     * DATA: "d{<data[0]> <data[1]> ...}"
+     * ERROR: "e<error>"
+     */
     struct ParsedMessage
     {
         MessageType command;

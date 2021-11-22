@@ -5,6 +5,8 @@
 #include <arpa/inet.h>
 #include <string.h>
 
+#include "sha256.h"
+
 namespace Tools
 {
     /**

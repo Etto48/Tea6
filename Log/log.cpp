@@ -1,7 +1,5 @@
 #include "log.h"
 
-#define HOME std::string(getenv("HOME"))
-
 #ifdef _DEBUG
 constexpr bool doEcho = true;
 #else
@@ -10,12 +8,12 @@ constexpr bool doEcho = false;
 
 namespace Log
 {
-    Log event{HOME + "/.Tea6/event.log", doEcho, 32};
-    Log error{HOME + "/.Tea6/error.log", doEcho, 31};
+    Log event{TEA6ROOT + "event.log", doEcho, 32};
+    Log error{TEA6ROOT + "error.log", doEcho, 31};
     #ifdef _DEBUG
-    Log debug{HOME + "/.Tea6/debug.log", doEcho};
+    Log debug{TEA6ROOT + "debug.log", doEcho, 33};
     #else
-    Log debug{"/dev/null", doEcho};
+    Log debug{"/dev/null", doEcho, 33};
     #endif
 
     std::string time(std::string fmt)
