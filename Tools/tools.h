@@ -6,6 +6,7 @@
 #include <string.h>
 
 #include "sha256.h"
+#include "base64.h"
 
 namespace Tools
 {

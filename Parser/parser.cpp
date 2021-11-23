@@ -35,7 +35,7 @@ namespace Parser
                     this->command = ERROR;
                 break;
             case QUERY:
-                if(this->args.size()!=1)
+                if(this->args.size()<1||this->args.size()>2)
                     this->command = ERROR;
                 break;
             case DATA:
