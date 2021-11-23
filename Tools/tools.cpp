@@ -17,4 +17,37 @@ namespace Tools
         inet_pton(AF_INET6,ip.c_str(),&ret);
         return ret;
     }
+
+    void sendMessage(int socket, const std::string& msg)
+    {
+        if(send(socket,msg.c_str(),msg.length()+1,0)<0)
+            perror("Error in send");
+    }
+    std::string receiveMessage(int socket)
+    {
+        std::string ret = "";
+        char buf[1024];
+        size_t sizeRead = 0;
+        bool endmsg = false;
+        do
+        {
+            bzero(buf,1024);
+            sizeRead = recv(socket,buf,1023,0);
+            for(size_t i = 0; i < sizeRead; i++)
+            {
+                if(buf[i]=='\n')
+                {
+                    buf[i]=0;
+                    endmsg = true;
+                    break;
+                }
+            }
+            ret += std::string(buf);
+        } while (sizeRead>0 && !endmsg);
+        if(sizeRead>0)
+            ret+='\n';
+        else
+            ret="";
+        return ret;
+    }
 };

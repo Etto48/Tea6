@@ -6,8 +6,7 @@ namespace Server
     void *Connection::run(void *me)
     {
         Connection *t = reinterpret_cast<Connection *>(me);
-        int nbytes;
-        char buf[1024];
+        std::string msg = "";
 
         auto ipv6Str = Tools::ipv6ToString(t->clientAddr.sin6_addr);
 
@@ -17,25 +16,10 @@ namespace Server
         do
         {
             identString = t->username != "" ? std::string(":") + t->username : "";
-            std::string msg = "";
-            bool endmsg = false;
-            do
+            msg = Tools::receiveMessage(t->clientSocket);
+            if (msg.size()>0)
             {
-                bzero(buf, 1024);
-                nbytes = recv(t->clientSocket, buf, 1023, 0);
-                for (int i = 0; i < nbytes; i++)
-                {
-                    if (buf[i] == '\n') // endmsg
-                    {
-                        endmsg = true;
-                        buf[i] = 0;
-                        break;
-                    }
-                }
-                msg += std::string(buf);
-            } while (nbytes > 0 && !endmsg);
-            if (nbytes > 0)
-            {
+                msg.pop_back();
                 Log::debug << Log::time() << " " << ipv6Str << "(" << t->id << ":" << t->clientSocket << identString << ") Received: " << msg << "\n";
                 // parse the message
                 Parser::ParsedMessage pm{msg};
@@ -92,9 +76,9 @@ namespace Server
                     break;
                 }
                 Log::debug << Log::time() << " " << ipv6Str << "(" << t->id << ":" << t->clientSocket << identString << ") Sent: " << response;
-                send(t->clientSocket, response.c_str(), response.length(), 0);
+                Tools::sendMessage(t->clientSocket,response);
             }
-        } while (nbytes > 0);
+        } while (msg.size()>0);
         if (t->username != "")
             Database::Tables::online -= (t->username);
 

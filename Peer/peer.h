@@ -5,9 +5,11 @@
 #include <string>
 #include <unistd.h>
 #include <pthread.h>
+#include <poll.h>
 #include <tuple>
 
 #include "../Database/database.h"
+#include "../Parser/parser.h"
 #include "../Tools/tools.h"
 
 namespace Peer

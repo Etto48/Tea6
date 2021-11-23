@@ -7,8 +7,24 @@ namespace Peer
     void *Peer::run(void *me)
     {
         Peer* t = (Peer *)me;
-        while(!t->shutdownRequested);
-        
+        std::vector<pollfd> fdArray;
+        std::string loginRequest = std::string("a")+t->userInfo.key+" "+t->userInfo.value+"\n";
+        Tools::sendMessage(t->server.first,loginRequest);
+        auto loginResponse = Tools::receiveMessage(t->server.first);
+        if(loginResponse.size()>0)
+        {
+            Parser::ParsedMessage parsedLoginResponse(loginResponse);
+            if(parsedLoginResponse.command==Parser::ERROR)
+                return nullptr;
+        }
+        else
+        {
+            return nullptr;
+        }
+        while(!t->shutdownRequested)
+        {
+            
+        }
         return nullptr;
     }
     void Peer::die()

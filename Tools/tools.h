@@ -23,4 +23,18 @@ namespace Tools
      * @return struct used for connection and data storage
      */
     in6_addr stringToIpv6(const std::string &ip);
+    /**
+     * @brief send a message (terminated with \\n) to a socket
+     * 
+     * @param socket socket file descriptor to send to
+     * @param msg message to send (must end with \\n)
+     */
+    void sendMessage(int socket, const std::string& msg);
+    /**
+     * @brief receive a message terminated with a \\n
+     * 
+     * @param socket socket file descriptor to receive from
+     * @return string containing the message (if string == "" -> connection closed)
+     */
+    std::string receiveMessage(int socket);
 };
