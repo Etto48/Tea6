@@ -13,7 +13,7 @@ PATCH		:=	$(word 3, $(VER))
 BUILD_TYPE	:=	debug
 VERSION		:=	v$(MAJOR).$(MINOR).$(PATCH)-$(BUILD_TYPE)
 
-CXXARGS		:=	-DVERSION=\"$(VERSION)\" -pthread -std=c++2a
+CXXARGS		:=	-DVERSION='"$(VERSION)"' -pthread -std=c++2a
 
 ifeq ($(BUILD_TYPE),debug)
 	CXXARGS	+=	-D_DEBUG -g -Og

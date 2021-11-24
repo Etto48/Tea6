@@ -62,13 +62,13 @@ namespace Peer
         if (peerServer.first < 0)
             perror("Error creating socket");
         int yes = 1;
-        if (setsockopt(peerServer.first, SOL_SOCKET, SO_REUSEADDR, (void *)&yes, 1))
+        if (setsockopt(peerServer.first, SOL_SOCKET, SO_REUSEADDR, (void *)&yes, sizeof(yes)))
             perror("Error in setsockopt");
 
         if (connect(server.first, (sockaddr *)&server.second, sizeof(server.second)))
             perror("Error connecting to server");
 
-        if (bind(peerServer.first, (sockaddr *)&server.second, sizeof(server.second)))
+        if (bind(peerServer.first, (sockaddr *)&peerServer.second, sizeof(peerServer.second)))
             perror("Error binding peerServer socket");
 
         if (listen(peerServer.first, PEER_BACKLOG))
