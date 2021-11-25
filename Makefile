@@ -37,11 +37,11 @@ all: $(PROJECT)
 
 $(PROJECT): $(OBJFILES)
 	@echo Linking $@
-	@$(CXX) -o $@ $(CXXARGS) $?
+	@$(CXX) -o $@ $? $(CXXARGS)
 
 %.cpp.o: %.cpp $(HFILES) $(THIS) $(VERFILE)
 	@echo Compiling $@
-	@$(CXX) -o $@ -c $(CXXARGS) $<
+	@$(CXX) -o $@ $< -c $(CXXARGS) 
 
 .PHONY:	clean patch minor major show-version tag
 

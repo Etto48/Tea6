@@ -17,7 +17,7 @@ namespace Parser
     /**
      * @brief parses a message and splits the arguments, the syntax for a message is
      * ADD: "a<username> <password>"
-     * QUERY: "q<username>"
+     * QUERY: "q<username> [<ip>]"
      * DATA: "d{<data[0]> <data[1]> ...}"
      * ERROR: "e<error>"
      */
