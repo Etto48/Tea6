@@ -11,15 +11,23 @@ PATCH		:=	$(word 3, $(VER))
 
 #can be debug|release
 BUILD_TYPE	:=	debug
+GLIBRARY	:=	gtk-3.0
+
 VERSION		:=	v$(MAJOR).$(MINOR).$(PATCH)-$(BUILD_TYPE)
 
-CXXARGS		:=	-DVERSION='"$(VERSION)"' -pthread -std=c++2a
+CXXARGS		:=	-DVERSION='"$(VERSION)"' -BUILD_TYPE='"$(BUILD_TYPE)"' -DGLIBRARY='"$(GLIBRARY)"' -pthread -std=c++2a
 
 ifeq ($(BUILD_TYPE),debug)
 	CXXARGS	+=	-D_DEBUG -g -Og
-else
+else ifeq ($(BUILD_TYPE),release)
 	CXXARGS	+=	-Ofast
 endif
+
+ifeq ($(GLIBRARY),gtk-3.0)
+	CXXARGS	+=	$(shell pkg-config --cflags --libs gdk-3.0) 
+endif
+
+
 
 EXCLUDE		:=	./Interface/%
 
