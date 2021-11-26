@@ -37,7 +37,7 @@ all: $(PROJECT)
 
 $(PROJECT): $(OBJFILES)
 	@echo Linking $@
-	@$(CXX) -o $@ $? $(CXXARGS)
+	@$(CXX) -o $@ $(OBJFILES) $(CXXARGS)
 
 %.cpp.o: %.cpp $(HFILES) $(THIS) $(VERFILE)
 	@echo Compiling $@

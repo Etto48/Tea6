@@ -7,6 +7,7 @@
 #include <pthread.h>
 #include <poll.h>
 #include <tuple>
+#include <signal.h>
 
 #include "../Database/database.h"
 #include "../Parser/parser.h"

@@ -4,8 +4,13 @@
 
 namespace Peer
 {
+    void signalHandler(int signal)
+    {
+        pthread_exit(0);
+    }
     void *Peer::run(void *me)
     {
+        signal(SIGTERM,signalHandler);
         Peer* t = (Peer *)me;
         std::vector<pollfd> fdArray;
         std::string loginRequest = std::string("a")+t->userInfo.key+" "+t->userInfo.value+"\n";
@@ -23,7 +28,12 @@ namespace Peer
         }
         while(!t->shutdownRequested)
         {
-            
+            std::string msg;
+            std::string cmd;
+            std::cout << t->userInfo.key << "@" << Tools::ipv6ToString(t->server.second.sin6_addr) << "> ";
+            std::cin>>cmd;
+            Tools::sendMessage(t->server.first,cmd+"\n");
+            std::cout << Tools::receiveMessage(t->server.first);
         }
         return nullptr;
     }
@@ -39,20 +49,21 @@ namespace Peer
         shutdown(peerServer.first,SHUT_RDWR);
         ::close(peerServer.first);
         shutdownRequested = true;
+        pthread_kill(id,SIGTERM);
     }
     Peer::Peer(const std::string &username, const std::string &password, const std::string &indexIp, uint16_t serverPort, uint16_t peerPort) : userInfo(username, Tools::sha256(password)), id(0)
     {
         server.second.sin6_family = AF_INET6;
         server.second.sin6_addr = Tools::stringToIpv6(indexIp);
         server.second.sin6_flowinfo = 0;
-        server.second.sin6_scope_id = htons(serverPort);
-        server.second.sin6_scope_id = 0x20;
+        server.second.sin6_port = htons(serverPort);
+        server.second.sin6_scope_id = 0;
 
         peerServer.second.sin6_family = AF_INET6;
-        peerServer.second.sin6_addr = {0};
+        peerServer.second.sin6_addr = Tools::stringToIpv6("::");
         peerServer.second.sin6_flowinfo = 0;
-        peerServer.second.sin6_scope_id = htons(peerPort);
-        peerServer.second.sin6_scope_id = 0x20;
+        peerServer.second.sin6_port = htons(peerPort);
+        peerServer.second.sin6_scope_id = 0;
 
         server.first = socket(AF_INET6, SOCK_STREAM, 0);
         if (server.first < 0)

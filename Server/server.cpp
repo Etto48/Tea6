@@ -110,8 +110,9 @@ namespace Server
         serverAddr.sin6_family = AF_INET6;
         serverAddr.sin6_port = htons(port);
         serverAddr.sin6_flowinfo = 0;
-        serverAddr.sin6_scope_id = 0x20; // link - local
-        serverAddr.sin6_addr = {0};
+        serverAddr.sin6_scope_id = 0;
+        serverAddr.sin6_addr = in6addr_any;
+        
         if (bind(serverSocket, (sockaddr *)&serverAddr, sizeof(sockaddr_in6)) < 0)
         {
             perror("Error binding socket");

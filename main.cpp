@@ -1,10 +1,14 @@
 #include "main.h"
 
 Server::Server *globalServer = nullptr;
+Peer::Peer *globalPeer = nullptr;
 
 void ctrl_c(int signum)
 {
-    globalServer->close();
+    if(globalServer)
+        globalServer->close();
+    if(globalPeer)
+        globalPeer->close();
 }
 
 int serverRole()
@@ -29,8 +33,11 @@ int peerRole()
     std::cin >> password;
     std::cout << "Index IPv6: ";
     std::cin >> indexIp;
-    std::cout << Tools::ipv6ToString(Tools::stringToIpv6(indexIp)) << std::endl;
+    //std::cout << Tools::ipv6ToString(Tools::stringToIpv6(indexIp)) << std::endl;
     Peer::Peer p{username, password, indexIp, INDEX_PORT, 4824};
+    globalPeer = &p;
+    signal(SIGINT, ctrl_c);
+    signal(SIGTERM, ctrl_c);
     p.join();
     return 0;
 }

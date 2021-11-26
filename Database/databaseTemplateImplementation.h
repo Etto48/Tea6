@@ -177,7 +177,7 @@ namespace Database
         auto ret = this->addNoLock(data);
         pthread_mutex_unlock(&accessMutex);
         Log::debug << Log::time() << " "
-                   << "Db(" << name << "): ADD " << data.key;
+                   << "Db(" << name << "): ADD \"" << data.key << "\" : \"" << data.value << "\"";
         if (ret)
         {
             Log::debug << "\n";
@@ -196,7 +196,7 @@ namespace Database
         auto ret = this->removeNoLock(key);
         pthread_mutex_unlock(&accessMutex);
         Log::debug << Log::time() << " "
-                   << "Db(" << name << "): REMOVE " << key;
+                   << "Db(" << name << "): REMOVE \"" << key << "\"";
         if (ret)
         {
             Log::debug << "\n";
@@ -215,7 +215,7 @@ namespace Database
         auto f = this->findNoLock(key);
         pthread_mutex_unlock(&accessMutex);
         Log::debug << Log::time() << " "
-                   << "Db(" << name << "): FIND " << key;
+                   << "Db(" << name << "): FIND \"" << key << "\"";
         if (f)
         {
             Log::debug << "\n";
